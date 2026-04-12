@@ -40,8 +40,8 @@
   "properties": {
     "units": "us",
     "forecastGenerator": "BaselineForecastGenerator",
-    "generatedAt": "2026-04-12T18:33:26+00:00",
-    "updateTime": "2026-04-12T18:27:42+00:00",
+    "generatedAt": "2026-04-12T19:27:26+00:00",
+    "updateTime": "2026-04-12T18:37:43+00:00",
     "validTimes": "2026-04-12T12:00:00+00:00/P7DT13H",
     "elevation": {
       "unitCode": "wmoUnit:m",
@@ -50,8 +50,8 @@
     "periods": [
       {
         "number": 1,
-        "name": "Today",
-        "startTime": "2026-04-12T11:00:00-07:00",
+        "name": "This Afternoon",
+        "startTime": "2026-04-12T12:00:00-07:00",
         "endTime": "2026-04-12T18:00:00-07:00",
         "isDaytime": true,
         "temperature": 65,

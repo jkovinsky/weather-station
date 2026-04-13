@@ -85,20 +85,24 @@
                     return;
                 }
                 
-                const response = await fetch("/forecast", {
+               const forecastRes = await fetch("/forecast", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ lat: selectedLat, lng: selectedLng })
                 });
+                const forecast = await forecastRes.json();
+                if(forecast.data.periods){ renderForecast(forecast.data.periods); }
 
-                const forecast = await response.json();
-                const periods = forecast.data.periods;
-                const summary = forecast.data.summary;
-
-                if(periods){ renderForecast(periods); }
-                if(summary){ renderSummary(summary); }
-            });
-        }  
+                // Second call - pass forecast data to summary
+                const summaryRes = await fetch("/summary", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(forecast.data)
+                });
+                const summaryData = await summaryRes.json();
+                if(summaryData.summary){ renderSummary(summaryData.summary); }
+                    });
+                }  
     </script>
 
     <script src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=places&v=weekly&callback=initAutocomplete" async defer></script>

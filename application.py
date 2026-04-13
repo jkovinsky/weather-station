@@ -21,6 +21,14 @@ def forecast():
 
     return jsonify({"data": {"periods": periods, "summary" : summary}})
 
+@application.route('/summary', methods=["POST"])
+def summary():
+    data = request.get_json()
+    periods = data["periods"]
+    summary = llm.gen_forecast_summary(periods)
+
+    return jsonify({"summary": summary})
+
 if __name__ == "__main__":
     application.debug = True
     application.run()

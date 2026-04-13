@@ -11,6 +11,10 @@
         </button>
     </div>
 
+     <!-- AI summary renders here -->
+    <div id="ai-summary" style="display: none; background-color: #f1f5f9; border-radius: 20px; padding: 1rem; width: min(600px, 90%); margin: 0 auto 5rem;">
+    </div>
+
     <!-- Forecast renders here -->
     <div id="forecast-results" style="display: none; padding: 0 2rem 2rem;">
         <h2 id="forecast-location" style="margin-bottom: 1rem;"></h2>
@@ -40,6 +44,17 @@
                 selectedLat = placeJSON.location.lat;
                 selectedLng = placeJSON.location.lng;
             });
+
+            function renderSummary(summary) {
+                const aiSummary = document.getElementById("ai-summary");
+                aiSummary.innerHTML = `
+                    <div style="display: flex; align-items: flex-start; gap: 10px;">
+                        <img src="/static/img/sparkle.svg" style="width: 24px; height: 24px; flex-shrink: 0;">
+                        <p style="margin: 0;">${summary}</p>
+                    </div>
+                `;
+                aiSummary.style.display = "block";
+            }
 
             function renderForecast(periods) {
                 const grid = document.getElementById("forecast-grid");
@@ -78,7 +93,10 @@
 
                 const forecast = await response.json();
                 const periods = forecast.data.periods;
+                const summary = forecast.data.summary;
+
                 if(periods){ renderForecast(periods); }
+                if(summary){ renderSummary(summary); }
             });
         }  
     </script>

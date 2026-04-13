@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="black">
+  <!-- Large center 4-point star -->
+  <path d="M57 8 C57 8 60 38 80 45 C60 52 57 82 57 82 C57 82 54 52 34 45 C54 38 57 8 57 8Z"/>
+  <!-- Top-left small star -->
+  <path d="M28 15 C28 15 30 28 40 31 C30 34 28 47 28 47 C28 47 26 34 16 31 C26 28 28 15 28 15Z"/>
+  <!-- Bottom-right tiny star -->
+  <path d="M74 60 C74 60 75.5 68 81 70 C75.5 72 74 80 74 80 C74 80 72.5 72 67 70 C72.5 68 74 60 74 60Z"/>
+</svg>

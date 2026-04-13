@@ -1,4 +1,4 @@
-import sqlite3, os, json, weather
+import sqlite3, os, json, weather, llm
 from flask import Flask, render_template, request, url_for, flash, redirect, jsonify
 from werkzeug.exceptions import abort
 
@@ -16,9 +16,10 @@ def forecast():
     lng = data["lng"]
 
     forecast = weather.get_forecast(lat, lng)
-    periods = weather.get_periods(forecast)
+    periods  = weather.get_periods(forecast)
+    summary = llm.gen_forecast_summary(periods)
 
-    return jsonify({"data": {"periods": periods}})
+    return jsonify({"data": {"periods": periods, "summary" : summary}})
 
 if __name__ == "__main__":
     application.debug = True

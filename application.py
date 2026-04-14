@@ -26,7 +26,7 @@ def summary():
     data = request.get_json()
     periods = data["periods"]
     summary = llm.gen_forecast_summary(periods)
-
+    print(summary)
     return jsonify({"summary": summary})
 
 if __name__ == "__main__":

@@ -18,6 +18,9 @@ def gen_forecast_summary(forecast):
             },
             contents=f"Provide a concise summary of the weather forecast: {forecast}"
         )
+        if response.ok:
+            return client_response
+        
         client_response = response.text
         return client_response
     except Exception as error:

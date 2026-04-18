@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% block title %} Login In {% endblock %}</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label for="usrEmail">Email</label>
+        <input type="email" name="usrEmail"
+               placeholder="weather@mail.com" class="form-control"
+               value="{{ request.form['usrEmail'] }}"
+               required
+               ></input>
+    </div>
+    {% if emailError %}
+    <p>{{  emailError }}</p>
+    {% endif %}
+    <div class="form-group">
+        <label for="usrPass">Password</label>
+        <input type="password" name="usrPass"
+               placeholder="password" class="form-control"
+               value="{{ request.form['usrPass'] }}"
+               required
+               ></input>
+    </div>
+    {% if passError %}
+    <p>{{ passError }}</p>
+    {% endif %}
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Login</button>
+    </div>
+    <a href="{{ url_for('signup')}}" class="d-block mt-2">Don't have an account? Sign up</a>
+</form>
+{% endblock %}

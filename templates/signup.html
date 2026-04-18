@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% block title %} Sign Up {% endblock %}</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label for="usrEmail">Enter your email</label>
+        <input type="email" name="usrEmail"
+               placeholder="weather@mail.com" class="form-control"
+               value="{{ request.form['usrEmail'] }}"
+               required
+               ></input>
+    </div>
+
+    <div class="form-group">
+        <label for="usrPhone">Enter your phone number</label>
+        <input type="tel" name="usrPhone"
+               placeholder="415-000-0000" class="form-control"
+               value="{{ request.form['usrPhone'] }}"
+               pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+               required
+               ></input>
+    </div>
+
+    <div class="form-group">
+        <label for="usrPass">Enter a password</label>
+        <input type="password" name="usrPass"
+               placeholder="password" class="form-control"
+               value="{{ request.form['usrPass'] }}"
+               required
+               ></input>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Sign up</button>
+    </div>
+    <a href="{{ url_for('index')}}" class="d-block mt-2">Go back to the weather</a>
+</form>
+{% endblock %}

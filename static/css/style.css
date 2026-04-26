@@ -7,6 +7,17 @@ body {
   background-color: #FAF3E0 !important;
 }
 
+/* ── Typography ────────────────────────────────────────── */
+h1 {
+    font-family: 'Lora', serif;
+    color: #27500A;
+    margin-top: 10px;
+}
+
+a {
+    font-family: 'Lora', serif;
+    color: #27500A;
+}
 /* ── Search title ────────────────────────────────────────── */
 
 #search-title {
@@ -25,9 +36,33 @@ body {
 }
 
 /* -- Nag Bar -------------------------------------- */
+.navbar {
+  background-color: #27500A !important;
+}
+
+.navbar .navbar-brand,
+.navbar .nav-link {
+  color: #FFFFFF !important;
+}
+
+.navbar .nav-link:hover {
+  color: #C0DD97 !important;
+}
+
+.navbar-toggler {
+  border-color: #FFFFFF !important;
+}
+
 #nav {
     font-family: 'Lora', serif;
-    color: #27500A;
+    color: #FFFFFF;
+}
+
+/* ── Form ─────────────────────────────────────────────── */
+
+.form-group {
+    font-family: 'Lora', serif;
+    color: #27500A !important; 
 }
 
 /* ── Buttons ─────────────────────────────────────────────── */
@@ -40,7 +75,7 @@ body {
 }
 
 .btn {
-  width: 120px;
+  width: 130px;
   height: 36px;
   padding: 5px 20px;
   border-radius: 8px;

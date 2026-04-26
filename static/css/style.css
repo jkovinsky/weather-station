@@ -1,8 +1,183 @@
-h1 {
-    border: 2px #eee solid;
-    color: brown;
-    text-align: center;
-    padding: 10px;
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,700;1,400&display=swap');
+
+
+/* ── Background ────────────────────────────────────────── */
+
+body {
+  background-color: #FAF3E0 !important;
+}
+
+/* ── Search title ────────────────────────────────────────── */
+
+#search-title {
+  font-family: 'Lora', serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+  font-style: italic;
+  color: #27500A;
+  line-height: 1.35;
+  text-align: center;
+}
+
+#search-title strong {
+  font-style: normal;
+  font-weight: 700;
+}
+
+/* -- Nag Bar -------------------------------------- */
+#nav {
+    font-family: 'Lora', serif;
+    color: #27500A;
+}
+
+/* ── Buttons ─────────────────────────────────────────────── */
+
+.btn-container {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  font-family: 'Lora', serif;
+}
+
+.btn {
+  width: 120px;
+  height: 36px;
+  padding: 5px 20px;
+  border-radius: 8px;
+  border: none;
+  background-color: #FFFFFF !important;
+  color: #27500A !important;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  border-radius: 20px !important;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.btn:hover {
+  background-color: #FFFFFF !important;
+  border: #27500A 2px solid !important;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* ── Spinner ─────────────────────────────────────────────── */
+
+#spinner {
+  display: none;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  margin: 0 auto 0.5rem;
+}
+
+/* ── AI summary ──────────────────────────────────────────── */
+
+#ai-summary {
+  display: none;
+  background-color: #FFFFFF;
+  border: #27500A 2px solid !important;
+  font-family: 'Lora', serif;
+  border-radius: 20px;
+  padding: 1rem;
+  width: min(600px, 90%);
+  margin: 0 auto 2rem;
+  font-size: 14px;
+  color: #3A3A3A;
+  line-height: 1.6;
+}
+
+/* ── Forecast section ────────────────────────────────────── */
+
+#forecast-results {
+  display: none;
+  padding: 0 2rem 2rem;
+}
+
+#forecast-location {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #27500A;
+}
+
+#forecast-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+/* ── Forecast cards ──────────────────────────────────────── */
+
+.forecast-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.forecast-card--day {
+  background: white;
+}
+
+.forecast-card--night {
+  background: #f8f8f8;
+}
+
+.forecast-card__name {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.forecast-card__icon {
+  width: 48px;
+  height: 48px;
+}
+
+.forecast-card__temp {
+  font-size: 26px;
+  font-weight: 500;
+}
+
+.forecast-card__temp-unit {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.forecast-card__desc {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.forecast-card__wind {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.forecast-card__rain {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  width: fit-content;
+}
+
+.forecast-card__rain--low {
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+
+.forecast-card__rain--high {
+  background: #eff6ff;
+  color: #1d4ed8;
 }
 
 

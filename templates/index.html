@@ -1,126 +1,157 @@
-{% extends 'base.html' %}
+<!doctype html>
+<html>
+  <head>
+    <meta
+      name="generator"
+      content="HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 11418), see www.w3.org"
+    />
+    <title></title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    {% extends 'base.html' %} {% block content %}
 
-{% block content %}
-    
-    <div style="display: flex; flex-direction: column; align-items: center; height: 50vh; justify-content: center;">
-        <h1 id="search-title">{% block title %} Go ahead, search the weather (but only in the US){% endblock %}</h1>
-        <button 
-            id="fetch-btn"
-            style="margin-top: 20px; padding: 10px 20px; border-radius: 8px; border: none; background-color: green; color: white; cursor: pointer;">
-            Fetch Weather
-        </button>
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 50vh;
+        justify-content: center;
+      "
+    >
+      <h1 id="search-title">
+        {% block title %} Go ahead — <strong>search the weather.</strong>
+        <br />Just keep it in the US. {% endblock %}
+      </h1>
+
+      <div class="btn-container">
+        <button id="fetch-btn" class="btn">Search</button>
+        <button id="create-alert" class="btn">Create Alert</button>
+      </div>
     </div>
+
     <!-- spinner renders here -->
+    <img src="/static/img/pulse-3.svg" id="spinner" name="spinner" />
 
-    <img src="/static/img/pulse-3.svg"  id="spinner" style="display:none; width: 24px; height: 24px; flex-shrink: 0; margin: 0 auto 0.5rem;"">
-
-     <!-- AI summary renders here -->
-    <div id="ai-summary" style="display: none; background-color: #f1f5f9; border-radius: 20px; padding: 1rem; width: min(600px, 90%); margin: 0 auto 5rem;">
-    </div>
+    <!-- AI summary renders here -->
+    <div id="ai-summary"></div>
 
     <!-- Forecast renders here -->
-    <div id="forecast-results" style="display: none; padding: 0 2rem 2rem;">
-        <h2 id="forecast-location" style="margin-bottom: 1rem;"></h2>
-        <div id="forecast-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px;"></div>
+    <div id="forecast-results">
+      <h2 id="forecast-location"></h2>
+      <div id="forecast-grid"></div>
     </div>
 
-    <script>
-        async function initAutocomplete() {
-            await google.maps.importLibrary("places");
+    <script type="text/javascript">
+      async function initAutocomplete() {
+        await google.maps.importLibrary("places");
 
-            const { PlaceAutocompleteElement } = google.maps.places;
+        const { PlaceAutocompleteElement } = google.maps.places;
 
-            const placeAutocomplete = new PlaceAutocompleteElement();
-            placeAutocomplete.style = "width: min(425px, 90%); margin-top: 20px; background-color: white; color: black; border-radius: 20px";
-            placeAutocomplete.placeholder = 'Search for a place...';
+        const placeAutocomplete = new PlaceAutocompleteElement();
+        placeAutocomplete.style =
+          "width: min(425px, 90%); margin-top: 20px; background-color: white; color: black; border-radius: 20px";
+        placeAutocomplete.placeholder = "Search for a place...";
 
-            const title = document.getElementById("search-title");
-            title.after(placeAutocomplete);
+        const title = document.getElementById("search-title");
+        title.after(placeAutocomplete);
 
-            let selectedLat = null;
-            let selectedLng = null;
+        let selectedLat = null;
+        let selectedLng = null;
 
-            placeAutocomplete.addEventListener("gmp-select", async (event) => {
-                const place = event.placePrediction.toPlace();
-                await place.fetchFields({ fields: ["displayName", "formattedAddress", "location"] });
-                const placeJSON = place.toJSON();
-                selectedLat = placeJSON.location.lat;
-                selectedLng = placeJSON.location.lng;
+        placeAutocomplete.addEventListener("gmp-select", async (event) => {
+          const place = event.placePrediction.toPlace();
+          await place.fetchFields({
+            fields: ["displayName", "formattedAddress", "location"],
+          });
+          const placeJSON = place.toJSON();
+          selectedLat = placeJSON.location.lat;
+          selectedLng = placeJSON.location.lng;
+        });
+
+        function renderSummary(summary) {
+          const aiSummary = document.getElementById("ai-summary");
+          aiSummary.innerHTML = `
+            <div style="display: flex; align-items: flex-start; gap: 10px;">
+              <img src="/static/img/sparkle.svg" style="width: 24px; height: 24px; flex-shrink: 0;">
+              <p style="margin: 0;">${summary}<\/p>
+            <\/div>
+          `;
+          aiSummary.style.display = "block";
+        }
+
+        function renderForecast(periods) {
+          const grid = document.getElementById("forecast-grid");
+          grid.innerHTML = periods
+            .map((p) => {
+              const precip = p.probabilityOfPrecipitation.value || 0;
+              return `
+                <div class="forecast-card ${p.isDaytime ? "forecast-card--day" : "forecast-card--night"}">
+                  <div class="forecast-card__name">${p.name}<\/div>
+                  <img src="${p.icon}" class="forecast-card__icon">
+                  <div>
+                    <span class="forecast-card__temp">${p.temperature}<\/span>
+                    <span class="forecast-card__temp-unit">°${p.temperatureUnit}<\/span>
+                  <\/div>
+                  <div class="forecast-card__desc">${p.shortForecast}<\/div>
+                  <div class="forecast-card__wind">${p.windSpeed} ${p.windDirection}<\/div>
+                  <span class="forecast-card__rain ${precip >= 40 ? "forecast-card__rain--high" : "forecast-card__rain--low"}">
+                    ${precip}% rain
+                  <\/span>
+                <\/div>
+              `;
+            })
+            .join("");
+          document.getElementById("forecast-results").style.display = "block";
+        }
+
+        document
+          .getElementById("fetch-btn")
+          .addEventListener("click", async () => {
+            let forecast = null;
+
+            if (!selectedLat || !selectedLng) {
+              alert("Select a location to get started");
+              return;
+            }
+
+            document.getElementById("spinner").style.display = "block";
+
+            try {
+              const forecastRes = await fetch("/forecast", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ lat: selectedLat, lng: selectedLng }),
+              });
+
+              forecast = await forecastRes.json();
+
+              if (forecast.data.periods) {
+                renderForecast(forecast.data.periods);
+              }
+            } finally {
+              document.getElementById("spinner").style.display = "none";
+            }
+
+            const summaryRes = await fetch("/summary", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(forecast.data),
             });
-
-            function renderSummary(summary) {
-                const aiSummary = document.getElementById("ai-summary");
-                aiSummary.innerHTML = `
-                    <div style="display: flex; align-items: flex-start; gap: 10px;">
-                        <img src="/static/img/sparkle.svg" style="width: 24px; height: 24px; flex-shrink: 0;">
-                        <p style="margin: 0;">${summary}</p>
-                    </div>
-                `;
-                aiSummary.style.display = "block";
+            const summaryData = await summaryRes.json();
+            if (summaryData.summary) {
+              renderSummary(summaryData.summary);
             }
-
-            function renderForecast(periods) {
-                const grid = document.getElementById("forecast-grid");
-                grid.innerHTML = periods.map(p => {
-                    const precip = p.probabilityOfPrecipitation.value || 0;
-                    return `
-                        <div style="background: ${p.isDaytime ? 'white' : '#f8f8f8'}; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 12px; display: flex; flex-direction: column; gap: 6px;">
-                            <div style="font-size: 13px; font-weight: 500;">${p.name}</div>
-                            <img src="${p.icon}" style="width: 48px; height: 48px;">
-                            <div>
-                                <span style="font-size: 26px; font-weight: 500;">${p.temperature}</span>
-                                <span style="font-size: 13px; color: #64748b;">°${p.temperatureUnit}</span>
-                            </div>
-                            <div style="font-size: 12px; color: #64748b;">${p.shortForecast}</div>
-                            <div style="font-size: 11px; color: #94a3b8;">${p.windSpeed} ${p.windDirection}</div>
-                            <span style="font-size: 11px; padding: 2px 8px; border-radius: 99px; background: ${precip >= 40 ? '#eff6ff' : '#f1f5f9'}; color: ${precip >= 40 ? '#1d4ed8' : '#94a3b8'}; width: fit-content;">
-                                ${precip}% rain
-                            </span>
-                        </div>
-                    `;
-                }).join("");
-                document.getElementById("forecast-results").style.display = "block";
-            }
-
-            document.getElementById("fetch-btn").addEventListener("click", async() => {
-                let forecast = null; 
-
-                if(!selectedLat || !selectedLng){
-                    alert("Select a location to get started");
-                    return;
-                }
-                
-                document.getElementById('spinner').style.display = 'block'; // show BEFORE
-
-                try {
-                    const forecastRes = await fetch("/forecast", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ lat: selectedLat, lng: selectedLng })
-                    });
-
-                    forecast = await forecastRes.json();
-
-                if (forecast.data.periods) {
-                    renderForecast(forecast.data.periods);
-                }
-                } finally {
-                    document.getElementById('spinner').style.display = 'none'; // hide AFTER, always
-                }
-            
-
-                // Second call - pass forecast data to summary
-                const summaryRes = await fetch("/summary", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(forecast.data)
-                });
-                const summaryData = await summaryRes.json();
-                if(summaryData.summary){ renderSummary(summaryData.summary); }
-                    });
-                }  
+          });
+      }
     </script>
-
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=places&v=weekly&callback=initAutocomplete" async defer></script>
-
-{% endblock %}
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=places&v=weekly&callback=initAutocomplete"
+      async
+      defer
+      type="text/javascript"
+    ></script>
+    {% endblock %}
+  </body>
+</html>

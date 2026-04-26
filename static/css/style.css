@@ -58,6 +58,19 @@ a {
     color: #FFFFFF;
 }
 
+/* ── Location Search ─────────────────────────────────────────────── */
+
+gmp-place-autocomplete {
+  width: min(425px, 90%);
+  margin-top: 20px;
+  background-color: white;
+  color: #27500A;
+  border-radius: 20px;
+  border: 2px solid #27500A !important;
+  font-family: 'Lora', serif;
+}
+
+
 /* ── Form ─────────────────────────────────────────────── */
 
 .form-group {

@@ -1,0 +1,234 @@
+{% extends 'base.html' %} {% block title %}Create an Alert{% endblock %} {%
+block styles %}
+<style>
+  gmp-place-autocomplete {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    width: min(425px, 90%);
+    height: 36px;
+  }
+</style>
+{% endblock %} {% block content %}
+<h1>Create an Alert</h1>
+
+<form method="post">
+  <div class="form-group">
+    <a id="select-loc">Select a location for this alert</a>
+
+    <label for="alertValue">Select an alert type</label>
+    <div class="dropdown">
+      <button
+        class="dropdown-toggle selection-btn"
+        type="button"
+        id="dropdownAlertType"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Type
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownAlertType">
+        <a class="dropdown-item" href="#" data-value="summary"
+          >Daily Summary
+        </a>
+        <a class="dropdown-item" href="#" data-value="temp">Temperature </a>
+        <a class="dropdown-item" href="#" data-value="condition">Condition</a>
+        <!-- <a class="dropdown-item" href="#" data-value="precip">Hazard</a> -->
+      </div>
+    </div>
+    <input type="hidden" name="alert_type" id="alertValue" />
+  </div>
+
+  <div class="form-group d-none" id="thresholdGroup">
+    <label>Select a threshold for this alert</label>
+    <div class="d-flex align-items-center">
+      <div class="dropdown mr-2">
+        <button
+          class="dropdown-toggle selection-btn"
+          type="button"
+          id="dropdownThreshold"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+          required
+        >
+          Threshold
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownThreshold">
+          <a class="dropdown-item" href="#" data-value=">=">Rises Above</a>
+          <a class="dropdown-item" href="#" data-value="<=">Drops Below</a>
+          <a class="dropdown-item" href="#" data-value="==">Equals</a>
+        </div>
+      </div>
+      <input
+        type="number"
+        id="numericThreshold"
+        name="numeric_threshold"
+        class="form-control"
+        style="width: 80px"
+      />
+      <input type="hidden" name="operator" id="operatorValue" />
+    </div>
+  </div>
+
+  <div class="form-group d-none" id="conditionGroup">
+    <label>Select a weather condition for this alert</label>
+    <div class="d-flex align-items-center">
+      <div class="dropdown mr-2">
+        <button
+          class="dropdown-toggle selection-btn"
+          type="button"
+          id="dropdownCondition"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Type
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownThreshold">
+          <a class="dropdown-item" href="#" data-value="precip"
+            >Chance of precipitation</a
+          >
+          <a class="dropdown-item" href="#" data-value="cloudy">Cloudy</a>
+          <a class="dropdown-item" href="#" data-value="sunny">Sunny</a>
+        </div>
+      </div>
+      <input type="hidden" name="condition" id="conditionValue" />
+    </div>
+  </div>
+
+  <div
+    class="form-group d-none"
+    id="percentageGroup"
+    style="display: flex; align-items: center"
+  >
+    <label for="percentageThreshold" class="mb-0 mr-2">Chance above</label>
+    <input
+      type="number"
+      id="percentageThreshold"
+      name="percentageThreshold"
+      class="threshold-input"
+      min="0"
+      max="100"
+    />
+    <span
+      class="ml-1"
+      style="color: #27500a; font-size: 14px; font-family: inherit"
+      >%</span
+    >
+  </div>
+
+  <div class="form-group">
+    <div class="btn-container">
+      <button type="submit" class="btn" id="create-alert">Create Alert</button>
+    </div>
+  </div>
+</form>
+{% endblock %} {% block scripts %}
+<script type="text/javascript">
+  async function initAutocomplete() {
+    await google.maps.importLibrary("places");
+
+    const { PlaceAutocompleteElement } = google.maps.places;
+
+    const placeAutocomplete = new PlaceAutocompleteElement();
+
+    const title = document.getElementById("select-loc");
+    title.after(placeAutocomplete);
+
+    let selectedLat = null;
+    let selectedLng = null;
+
+    placeAutocomplete.addEventListener("gmp-select", async (event) => {
+      const place = event.placePrediction.toPlace();
+      await place.fetchFields({
+        fields: ["displayName", "formattedAddress", "location"],
+      });
+      const placeJSON = place.toJSON();
+      selectedLat = placeJSON.location.lat;
+      selectedLng = placeJSON.location.lng;
+
+      const coordinates = await fetch("/location", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lat: selectedLat, lng: selectedLng }),
+      });
+    });
+  }
+</script>
+<script
+  src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=places&v=weekly&callback=initAutocomplete"
+  async
+  defer
+  type="text/javascript"
+></script>
+<script>
+  document.querySelector("form").addEventListener("submit", function (e) {
+    if (!document.getElementById("alertValue").value) {
+      e.preventDefault();
+      alert("Please select an alert type.");
+      return;
+    }
+    if (document.getElementById("alertValue").value === "temp") {
+      if (!document.getElementById("operatorValue").value) {
+        e.preventDefault();
+        alert("Please select a threshold operator.");
+        return;
+      }
+      if (!document.getElementById("numericThreshold").value) {
+        e.preventDefault();
+        alert("Please enter a numeric threshold value.");
+        return;
+      }
+    }
+    if (document.getElementById("alertValue").value === "condition") {
+      if (!document.getElementById("conditionValue").value) {
+        e.preventDefault();
+        alert("Please select a weather condition.");
+        return;
+      }
+      if (document.getElementById("conditionValue").value.includes("precip")) {
+        if (!document.getElementById("percentageThreshold").value) {
+          e.preventDefault();
+          alert("Please enter a percentage threshold value.");
+          return;
+        }
+      }
+    }
+  });
+
+  document.querySelectorAll(".dropdown").forEach(function (dropdown) {
+    dropdown.querySelectorAll(".dropdown-item").forEach(function (item) {
+      item.addEventListener("click", function (e) {
+        e.preventDefault();
+        var btn = dropdown.querySelector(".dropdown-toggle");
+        var hidden = dropdown.parentElement.querySelector(
+          "input[type='hidden']",
+        );
+        btn.textContent = this.textContent;
+        hidden.value = this.dataset.value;
+
+        if (btn.id === "dropdownAlertType") {
+          document
+            .getElementById("thresholdGroup")
+            .classList.toggle("d-none", this.dataset.value !== "temp");
+        }
+        if (btn.id === "dropdownAlertType") {
+          document
+            .getElementById("conditionGroup")
+            .classList.toggle("d-none", this.dataset.value !== "condition");
+
+          document.getElementById("dropdownCondition").textContent = "Type";
+          document.getElementById("conditionValue").value = "";
+          document.getElementById("percentageGroup").classList.add("d-none");
+        }
+        if (btn.id === "dropdownCondition") {
+          document
+            .getElementById("percentageGroup")
+            .classList.toggle("d-none", this.dataset.value !== "precip");
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

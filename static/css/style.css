@@ -116,6 +116,36 @@ gmp-place-autocomplete {
   box-shadow: none !important;
 }
 
+.selection-btn {
+  min-width: 90px;
+  width: auto;
+  height: 36px;
+  padding: 5px 20px;
+  border-radius: 8px;
+  border: none;
+  background-color: #FFFFFF !important;
+  color: #27500A !important;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  text-align: left;
+  border-radius: 20px !important;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.threshold-input {
+  width: 80px;
+  height: 36px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: none;
+  background-color: #FFFFFF;
+  color: #27500A;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+
 /* ── Spinner ─────────────────────────────────────────────── */
 
 #spinner {

@@ -82,6 +82,58 @@ def signup():
         
     return render_template('signup.html')
 
+@application.route('/api/session-check')
+def check_session():
+    # Return true if 'user_id' exists in session
+    return jsonify(has_session='user_id' in session)
+
+@application.route('/logout', methods=["POST"])
+def logout():
+    session.pop('user_id', None)
+    return redirect(url_for('index'))
+    
+@application.route('/location', methods=["POST"])
+def location():
+    data = request.get_json()
+    session['lat'] = data.get('lat')
+    session['lng'] = data.get('lng')
+    return jsonify({"status": "ok"})
+
+@application.route('/alerts', methods=("GET", "POST"))
+def alerts():
+    alert = {"longitude" : None, "latitude" : None, "alert_type" : None, "operator" : None, "numeric_threshold" : None, "condition" : None, "percentage_threshold" : None}
+    if request.method == 'POST':
+        alertType           = request.form.get('alert_type')
+        if(not alertType):
+            return render_template('alerts.html', alertError='Please select an alert type.')
+        operator            = request.form.get('operator')
+        numericThreshold    = request.form.get('numeric_threshold')
+        condition           = request.form.get('condition')
+        percentageThreshold = request.form.get('percentageThreshold')
+
+        alert["latitude"]             = session.get('lat')
+        alert["longitude"]            = session.get('lng')
+        alert["alert_type"]           = alertType
+        alert["operator"]             = operator
+        alert["numeric_threshold"]    = numericThreshold
+        alert["condition"]            = condition
+        alert["percentage_threshold"] = percentageThreshold
+
+        if(session['user_id']):
+            is_email = False
+            is_phone_number = True
+            location = f"{alert['latitude']}, {alert['longitude']}"
+            alertJSON = json.dumps(alert)
+            conn = get_db_connection()
+            cursor = conn.execute('INSERT INTO alerts (user_id, is_email, is_phone_number, latitude, longitude, location, alert_type) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                         (session.get('user_id'), is_email, is_phone_number, alert['latitude'], alert['longitude'], location, alertJSON))
+            conn.commit()
+            conn.close()
+        return redirect(url_for('index'))
+    
+    google_api_key=os.getenv("GOOGLE_PLACES_API_KEY")
+    return render_template('alerts.html', google_api_key=google_api_key)
+
 if __name__ == "__main__":
     application.debug = True
     application.run()

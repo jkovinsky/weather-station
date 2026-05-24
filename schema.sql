@@ -10,8 +10,11 @@ CREATE TABLE ALERTS (
     latitude REAL NOT NULL,
     longitude REAL NOT NULL,
     location VARCHAR(255) NOT NULL,
-    operator VARCHAR(3) NOT NULL,
-    threshold REAL NOT NULL,
+    operator VARCHAR(3),
+    threshold REAL,
+    condition VARCHAR(3),
+    alert_type TEXT,
+    last_sent_at TIMESTAMP,
     user_id INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );

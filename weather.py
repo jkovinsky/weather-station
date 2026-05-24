@@ -2,6 +2,7 @@
 import time
 import json
 import requests
+from typing import Any
 
 
 #
@@ -10,7 +11,7 @@ WEATHER_FEED_ENDPOINT = "https://api.weather.gov/points"
 
 
 
-def get_local_station(latitude, longitude):
+def get_local_station(latitude : float, longitude : float) -> str:
     try:
         response  = requests.get(f"{WEATHER_FEED_ENDPOINT}/{latitude},{longitude}")
         data = response.json()
@@ -25,7 +26,7 @@ def get_local_station(latitude, longitude):
         return "unexpected_error"
 
 
-def get_last_data(station_url):
+def get_last_data(station_url : str) -> dict[str, Any]:
     try:
         response = requests.get(station_url)
         data = response.json()
@@ -41,17 +42,12 @@ def get_last_data(station_url):
         return "unexpected_error"
         
 
-def get_forecast(lat, lon):
+def get_forecast(lat : float, lon : float) -> dict[str, Any]:
     url = get_local_station(lat, lon)
     data = get_last_data(url)
     return data
 
 
-def get_periods(forecast):
+def get_periods(forecast: dict[str, Any]) -> list[dict]:
     periods = forecast['properties']['periods']
     return periods
-
-
-
-# get_forecast(37.7995, -122.4089)
-

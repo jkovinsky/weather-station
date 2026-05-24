@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="/static/css/style.css" />
     <title>{% block title %}{% endblock %}</title>
 
-    {% block styles %}{% endblock %}
+    {% block styles %}{% endblock %} {% block head_scripts %}{% endblock %}
   </head>
   <body>
     <nav id="navbar" class="navbar navbar-expand-md navbar-dark">
@@ -35,9 +35,21 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
+          {% if 'user_id' not in session %}
           <li class="nav-item active">
             <a id="nav" class="nav-link" href="{{ url_for('login')}}">Login</a>
           </li>
+          {% endif %} {% if 'user_id' in session %}
+          <li class="nav-item">
+            <a id="alerts" class="nav-link" href="{{ url_for('alerts')}}"
+              >Alerts</a
+            >
+          </li>
+          {% endif %} {% if 'user_id' in session %}
+          <li class="nav-item">
+            <a id="logout" class="nav-link">Logout</a>
+          </li>
+          {% endif %}
         </ul>
       </div>
     </nav>
@@ -59,5 +71,13 @@
       integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
       crossorigin="anonymous"
     ></script>
+    <script>
+      document.getElementById("logout")?.addEventListener("click", () => {
+        fetch("/logout", { method: "POST" }).then(() => {
+          window.location.href = "{{ url_for('index') }}";
+        });
+      });
+    </script>
+    {% block scripts %}{% endblock %}
   </body>
 </html>

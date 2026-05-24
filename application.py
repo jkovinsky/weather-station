@@ -7,8 +7,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 application = Flask(__name__)
 application.config['SECRET_KEY'] = 'G7kL9qX2vR8mT4zP1c'
 
+DB_PATH = os.getenv('DATABASE_PATH', 'database.db')
+
 def get_db_connection():
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 

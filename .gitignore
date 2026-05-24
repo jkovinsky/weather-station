@@ -223,6 +223,7 @@ __marimo__/
 
 .vscode/
 
-# database lol, keep that private
-
+# databases
 database.db
+database_dev.db
+
